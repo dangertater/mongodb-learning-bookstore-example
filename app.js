@@ -12,7 +12,7 @@ heck.connectToDb((err) => {
 		db = heck.getDb()
 	}
 })
-//useful for looking at api info
+//eric's extra code useful for looking at api info, logs into the super4 console
 let id = 0
 app.use((req, res, next) => {
 	let thisId = id++
@@ -35,10 +35,14 @@ app.use((req, res, next) => {
 
 app.get("/books", (req, res) => {
 	let books = []
+	// let page = req.query.p || 0
+	// let booksPerPage = 2
 	console.log("working on books for id", req.reqID)
 	db.collection("books")
 		.find()
 		.sort({ author: 1 })
+		// .skip(page * booksPerPage)
+		// .limit(booksPerPage)
 		.forEach((book) => {
 			books.push(book)
 		})
@@ -70,11 +74,12 @@ app.post("/books", (req, res) => {
 	let book = req.body
 	console.log("book", book)
 	db.collection("books")
-		.insertOne(book)
+		.insertMany(book)
 		.then((result) => {
 			res.status(201).json(result)
 		})
 		.catch((err) => {
+			console.log(err)
 			res.status(500).json({ err: "could not create a new document" })
 		})
 })
